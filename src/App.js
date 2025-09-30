@@ -1,10 +1,12 @@
+// App.js
 import React from 'react';
-import MyPortfollio from './Portfolio/MyPortfollio';
+import Portfolio from './MyPortfollio';
+import './App.css';
 
 function App() {
   return (
     <div>
-      <MyPortfollio />
+      <Portfolio />
     </div>
   );
 }
