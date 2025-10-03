@@ -13,6 +13,7 @@ import {
 } from 'react-icons/fi';
 import { FaLinkedinIn, FaXTwitter } from 'react-icons/fa6';
 import { FaFacebookF, FaInstagram } from 'react-icons/fa';
+import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 
 const Navbar = ({ activeSection, setActiveSection }) => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -44,11 +45,12 @@ const Navbar = ({ activeSection, setActiveSection }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Fixed: Run only once on mount to set default to 'about'
   useEffect(() => {
     if (!activeSection) {
       setActiveSection('about');
     }
-  }, [activeSection, setActiveSection]);
+  }, []); // Empty dependency array ensures it runs once
 
   const socialIcons = [
     { 
@@ -122,29 +124,15 @@ const Navbar = ({ activeSection, setActiveSection }) => {
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: -50, opacity: 0 }}
         transition={{ duration: 0.3 }}
+        className="fixed-top"
         style={{
-          background: 'linear-gradient(90deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
-          borderBottom: '1px solid rgba(255,255,255,0.1)',
+          background: 'linear-gradient(90deg, #3c4149ff 0%, #323233ff 50%, #26406cff 100%)',
+          borderBottom: '1px solid rgba(255,255,255,0.2)',
           padding: '0.48rem 0',
-          position: 'fixed',
-          top: 0,
-          width: '100%',
           zIndex: 1002
         }}
       >
-        <div style={{
-          maxWidth: '1200px',
-          margin: '0 auto',
-          padding: '0 0.8rem',
-          display: 'flex',
-          justifyContent: 'flex-end',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '0.64rem',
-          '@media (max-width: 768px)': {
-            justifyContent: 'center'
-          }
-        }}>
+        <div className="container d-flex justify-content-end align-items-center flex-wrap gap-2">
           {socialIcons.map((social, index) => (
             <motion.a
               key={index}
@@ -159,7 +147,7 @@ const Navbar = ({ activeSection, setActiveSection }) => {
               whileTap={{ scale: 0.9 }}
               style={{
                 color: social.color,
-                background: 'rgba(255,255,255,0.1)',
+                background: 'rgba(255,255,255,0.15)',
                 borderRadius: '50%',
                 padding: '0.3rem',
                 display: 'flex',
@@ -168,8 +156,9 @@ const Navbar = ({ activeSection, setActiveSection }) => {
                 transition: 'all 0.3s ease',
                 textDecoration: 'none',
                 fontSize: '0.7rem',
-                border: `1px solid ${social.color}20`,
-                position: 'relative'
+                border: `1px solid ${social.color}30`,
+                position: 'relative',
+                boxShadow: `0 0 8px ${social.color}50` // Always glow
               }}
               title={social.label}
             >
@@ -200,41 +189,27 @@ const Navbar = ({ activeSection, setActiveSection }) => {
 
       {/* Main Navigation Bar */}
       <motion.nav
+        className="navbar navbar-expand-md fixed-top mt-5"
         style={{
-          position: 'fixed',
-          top: '2.5rem',
-          width: '100%',
+          top: '-.6rem',
           backdropFilter: 'blur(20px)',
           background: isScrolled 
-            ? 'rgba(15, 23, 42, 0.95)' 
-            : 'rgba(15, 23, 42, 0.8)',
+            ? 'rgba(20, 21, 23, 0.95)' // Lighter blue gradient base
+            : 'linear-gradient(90deg, #343840ff 0%, #2c2c2eff 50%, #213557ff 100%)',
           zIndex: 1001,
-          borderBottom: '1px solid rgba(255,255,255,0.1)',
-          padding: '0.88rem 0',
+          borderBottom: '1px solid rgba(21, 20, 20, 0.2)',
           transition: 'all 0.3s ease'
         }}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          maxWidth: '1200px',
-          margin: '0 auto',
-          padding: '0 1.1rem'
-        }}>
+        <div className="container">
           {/* Logo/Name Section */}
           <motion.div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '1.1rem'
-            }}
+            className="navbar-brand"
             whileHover={{ scale: 1.05 }}
           >
-            {/* Profile Image */}
             <motion.div
               whileHover={{ rotate: 360 }}
               transition={{ duration: 0.5 }}
@@ -242,7 +217,7 @@ const Navbar = ({ activeSection, setActiveSection }) => {
                 width: '49.5px',
                 height: '49.5px',
                 borderRadius: '50%',
-                background: 'linear-gradient(45deg, #8b5cf6, #3b82f6)',
+                background: 'linear-gradient(45deg, #2f3144ff, #3760e8ff)',
                 padding: '2px',
                 display: 'flex',
                 alignItems: 'center',
@@ -253,11 +228,11 @@ const Navbar = ({ activeSection, setActiveSection }) => {
                 width: '100%',
                 height: '100%',
                 borderRadius: '50%',
-                background: '#0f172a',
+                background: '#eff6ff', // Lighter background
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: 'white',
+                color: '#1e40af',
                 fontWeight: 'bold',
                 fontSize: '0.88rem',
                 backgroundImage: 'url("/api/placeholder/40/40")',
@@ -269,170 +244,85 @@ const Navbar = ({ activeSection, setActiveSection }) => {
             </motion.div>
           </motion.div>
 
-          {/* Desktop Navigation - Hidden on mobile */}
-          <div style={{ 
-            display: 'flex',
-            gap: '1.65rem',
-            alignItems: 'center',
-            position: 'absolute',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            '@media (max-width: 768px)': {
-              display: 'none'
-            }
-          }}>
-            {navItems.map((label) => (
-              <motion.button
-                key={label}
-                style={{
-                  color: activeSection === label.toLowerCase() ? 'white' : '#94a3b8',
-                  fontWeight: 500,
-                  padding: '0.66rem 1.32rem',
-                  background: activeSection === label.toLowerCase() 
-                    ? 'linear-gradient(45deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.15))' 
-                    : 'transparent',
-                  border: activeSection === label.toLowerCase() 
-                    ? '1px solid rgba(99, 102, 241, 0.3)'
-                    : '1px solid transparent',
-                  cursor: 'pointer',
-                  fontSize: '0.836rem',
-                  borderRadius: '13.2px',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  transition: 'all 0.3s ease'
-                }}
-                whileHover={{ 
-                  scale: 1.08,
-                  color: 'white',
-                  background: 'rgba(99, 102, 241, 0.1)',
-                  boxShadow: '0 0 22px rgba(99, 102, 241, 0.2)',
-                  border: '1px solid rgba(99, 102, 241, 0.2)'
-                }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => handleNavClick(label)}
-              >
-                {activeSection === label.toLowerCase() && (
-                  <motion.div
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      background: 'linear-gradient(45deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2))',
-                      borderRadius: '13.2px',
-                      zIndex: -1
-                    }}
-                    layoutId="activeSection"
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                  />
-                )}
-                {label}
-              </motion.button>
-            ))}
-          </div>
-
-          {/* Mobile Menu Button */}
-          <motion.button
+          {/* Mobile Toggle Button */}
+          <button
+            className="navbar-toggler"
+            type="button"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             style={{
-              display: 'none',
-              background: 'rgba(255,255,255,0.1)',
+              background: 'rgba(255,255,255,0.15)',
               border: '1px solid rgba(255,255,255,0.2)',
               borderRadius: '11px',
               padding: '0.66rem',
               color: 'white',
-              cursor: 'pointer',
-              fontSize: '1.32rem',
-              '@media (max-width: 768px)': {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }
+              fontSize: '1.32rem'
             }}
-            whileHover={{ 
-              scale: 1.1,
-              background: 'rgba(99, 102, 241, 0.2)',
-              boxShadow: '0 0 16.5px rgba(99, 102, 241, 0.4)'
-            }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? <FiX /> : <FiMenu />}
-          </motion.button>
-        </div>
+          </button>
 
-        {/* Mobile Menu Dropdown */}
-        <AnimatePresence>
-          {isMobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              style={{
-                background: 'rgba(15, 23, 42, 0.98)',
-                backdropFilter: 'blur(20px)',
-                borderTop: '1px solid rgba(255,255,255,0.1)',
-                padding: '1.65rem',
-                position: 'absolute',
-                top: '100%',
-                left: 0,
-                right: 0,
-                zIndex: 1000,
-                boxShadow: '0 11px 33px rgba(0,0,0,0.3)'
-              }}
-            >
-              {/* Navigation Items */}
-              <div style={{ 
-                display: 'flex', 
-                flexDirection: 'column', 
-                gap: '0.88rem', 
-                marginBottom: '1.65rem' 
-              }}>
+          {/* Navigation Items */}
+          <AnimatePresence>
+            <div className={`collapse navbar-collapse ${isMobileMenuOpen ? 'show' : ''}`} id="navbarNav">
+              <ul className="navbar-nav mx-auto">
                 {navItems.map((label) => (
-                  <motion.button
-                    key={label}
-                    style={{
-                      color: activeSection === label.toLowerCase() ? 'white' : '#94a3b8',
-                      fontWeight: 500,
-                      padding: '1.1rem 1.32rem',
-                      background: activeSection === label.toLowerCase() 
-                        ? 'linear-gradient(45deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.15))' 
-                        : 'rgba(255,255,255,0.05)',
-                      border: activeSection === label.toLowerCase() 
-                        ? '1px solid rgba(99, 102, 241, 0.3)'
-                        : '1px solid rgba(255,255,255,0.1)',
-                      cursor: 'pointer',
-                      fontSize: '0.88rem',
-                      borderRadius: '13.2px',
-                      textAlign: 'left',
-                      transition: 'all 0.3s ease'
-                    }}
-                    whileHover={{ 
-                      scale: 1.02,
-                      color: 'white',
-                      background: 'rgba(99, 102, 241, 0.1)',
-                      boxShadow: '0 0 16.5px rgba(99, 102, 241, 0.3)'
-                    }}
-                    onClick={() => handleNavClick(label)}
-                  >
-                    {label}
-                  </motion.button>
+                  <li key={label} className="nav-item">
+                    <motion.button
+                      className="nav-link btn"
+                      style={{
+                        color: activeSection === label.toLowerCase() ? 'white' : '#dbeafe',
+                        fontWeight: 500,
+                        padding: '0.66rem 1.32rem',
+                        background: activeSection === label.toLowerCase() 
+                          ? 'linear-gradient(45deg, rgba(59, 130, 246, 0.25), rgba(99, 102, 241, 0.25))' 
+                          : 'transparent',
+                        border: activeSection === label.toLowerCase() 
+                          ? '1px solid rgba(59, 130, 246, 0.4)'
+                          : '1px solid transparent',
+                        fontSize: '0.836rem',
+                        borderRadius: '13.2px',
+                        position: 'relative',
+                        overflow: 'hidden',
+                        transition: 'all 0.3s ease'
+                      }}
+                      whileHover={{ 
+                        scale: 1.08,
+                        color: 'white',
+                        background: 'rgba(59, 130, 246, 0.2)',
+                        boxShadow: '0 0 22px rgba(59, 130, 246, 0.3)',
+                        border: '1px solid rgba(59, 130, 246, 0.3)'
+                      }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => handleNavClick(label)}
+                    >
+                      {activeSection === label.toLowerCase() && (
+                        <motion.div
+                          style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            background: 'linear-gradient(45deg, rgba(59, 130, 246, 0.3), rgba(99, 102, 241, 0.3))',
+                            borderRadius: '13.2px',
+                            zIndex: -1
+                          }}
+                          layoutId="activeSection"
+                          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        />
+                      )}
+                      {label}
+                    </motion.button>
+                  </li>
                 ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              </ul>
+            </div>
+          </AnimatePresence>
+        </div>
       </motion.nav>
 
       {/* Spacer for fixed navbar */}
-      <div style={{ 
-        height: '7.5rem',
-        transition: 'height 0.3s ease',
-        '@media (max-width: 768px)': {
-          height: '6.5rem'
-        }
-      }} />
+      <div style={{ height: '7.5rem' }} />
     </>
   );
 };

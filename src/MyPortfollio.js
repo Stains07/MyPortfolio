@@ -14,7 +14,7 @@ import Projects from './components/Projects';
 import Contact from './components/Contact';
 
 const Portfolio = () => {
-  const [activeSection, setActiveSection] = useState('home');
+  const [activeSection, setActiveSection] = useState('about');
   const [slideIndex, setSlideIndex] = useState(0);
 
   // Your existing data objects (profileData, colors, slides) remain the same
@@ -138,10 +138,10 @@ const Portfolio = () => {
 
   const renderActiveSection = () => {
     switch (activeSection) {
-      case 'home':
-        return <Home slideIndex={slideIndex} setSlideIndex={setSlideIndex} slides={slides} />;
       case 'about':
         return <About profileData={profileData} colors={colors} />;
+      case 'technologies':
+        return <Home slideIndex={slideIndex} setSlideIndex={setSlideIndex} slides={slides} />;
       case 'skills':
         return <Skills profileData={profileData} colors={colors} />;
       case 'projects':
@@ -149,7 +149,7 @@ const Portfolio = () => {
       case 'contact':
         return <Contact profileData={profileData} colors={colors} />;
       default:
-        return <Home slideIndex={slideIndex} setSlideIndex={setSlideIndex} slides={slides} />;
+        return <About profileData={profileData} colors={colors} />;
     }
   };
 

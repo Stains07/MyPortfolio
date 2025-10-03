@@ -111,10 +111,15 @@ const Home = () => {
   }, []);
 
   return (
-    <div style={{ marginTop: '3rem' }}>
-      <h2 style={{
+    <div style={{ 
+      marginTop: '3rem',
+      padding: '1rem',
+      maxWidth: '1200px',
+      margin: '0 auto'
+    }}>
+      <h3 style={{
         marginTop: '-50px',
-        fontSize: '2.5rem',
+        fontSize: 'clamp(1.8rem, 4vw, 2.5rem)',
         fontWeight: 700,
         marginBottom: '2rem',
         background: 'linear-gradient(45deg, #e0e7ff 30%, #818cf8 100%)',
@@ -123,8 +128,14 @@ const Home = () => {
         textAlign: 'center'
       }}>
         Technologies I Work With
-      </h2>
-      <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '15px', minHeight: '500px' }}>
+      </h3>
+      
+      <div style={{ 
+        position: 'relative', 
+        overflow: 'hidden', 
+        borderRadius: '15px', 
+        minHeight: '400px'
+      }}>
         <AnimatePresence>
           <motion.div
             key={slideIndex}
@@ -134,59 +145,132 @@ const Home = () => {
             transition={{ duration: 0.7, ease: 'easeInOut' }}
             style={{
               display: 'flex',
+              flexDirection: 'row',
               alignItems: 'center',
               background: 'rgba(15,23,42,0.6)',
-              padding: '2.5rem',
+              padding: '1.5rem',
               borderRadius: '15px',
               border: `1px solid ${slides[slideIndex].color}`,
               boxShadow: `0 0 20px ${slides[slideIndex].color}`,
-              minHeight: '400px',
+              minHeight: '350px',
+              gap: '1.5rem'
             }}
+            className="tech-slide-container"
           >
-            <div style={{ flex: 1, paddingRight: '2rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.5rem' }}>
-                <span style={{ fontSize: '2.5rem', marginRight: '1rem', color: slides[slideIndex].color }}>
+            {/* Image Section - First on mobile */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7 }}
+              style={{
+                flex: '0 0 auto',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+              className="tech-image-container"
+            >
+              <img
+                src={slides[slideIndex].image}
+                alt={slides[slideIndex].title}
+                style={{ 
+                  width: '100%',
+                  maxWidth: '350px',
+                  height: '250px',
+                  borderRadius: '10px', 
+                  objectFit: 'cover', 
+                  border: `2px solid ${slides[slideIndex].color}` 
+                }}
+                className="tech-image"
+              />
+            </motion.div>
+
+            {/* Content Section */}
+            <div style={{ 
+              flex: 1, 
+              display: 'flex', 
+              flexDirection: 'column',
+              justifyContent: 'center'
+            }} className="tech-content">
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                marginBottom: '1rem',
+                flexWrap: 'wrap',
+                gap: '0.5rem'
+              }}>
+                <span style={{ 
+                  fontSize: 'clamp(2rem, 4vw, 2.5rem)', 
+                  color: slides[slideIndex].color 
+                }}>
                   {slides[slideIndex].icon}
                 </span>
-                <h3 style={{ fontSize: '1.8rem', fontWeight: 600, color: '#e0e7ff' }}>
+                <h3 style={{ 
+                  fontSize: 'clamp(1.3rem, 3vw, 1.8rem)', 
+                  fontWeight: 600, 
+                  color: '#e0e7ff',
+                  margin: 0
+                }}>
                   {slides[slideIndex].title}
                 </h3>
               </div>
-              <p style={{ color: '#94a3b8', marginBottom: '1.5rem', fontSize: '1.1rem', lineHeight: 1.6 }}>
+              
+              <p style={{ 
+                color: '#94a3b8', 
+                marginBottom: '1rem', 
+                fontSize: 'clamp(0.9rem, 2vw, 1.1rem)', 
+                lineHeight: 1.6 
+              }}>
                 {slides[slideIndex].description}
               </p>
-              <ul style={{ listStyle: 'none', padding: 0 }}>
+              
+              <ul style={{ 
+                listStyle: 'none', 
+                padding: 0,
+                margin: 0
+              }}>
                 {slides[slideIndex].points.map((point, idx) => (
                   <motion.li
                     key={idx}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: idx * 0.1 }}
-                    style={{ display: 'flex', alignItems: 'center', marginBottom: '0.75rem', fontSize: '1rem' }}
+                    style={{ 
+                      display: 'flex', 
+                      alignItems: 'flex-start', 
+                      marginBottom: '0.5rem', 
+                      fontSize: 'clamp(0.8rem, 2vw, 1rem)',
+                      lineHeight: 1.4
+                    }}
                   >
-                    <span style={{ color: slides[slideIndex].color, marginRight: '0.5rem' }}>•</span>
-                    <span>{point}</span>
+                    <span style={{ 
+                      color: slides[slideIndex].color, 
+                      marginRight: '0.5rem',
+                      flexShrink: 0,
+                      marginTop: '0.2rem'
+                    }}>•</span>
+                    <span style={{ color: '#cbd5e1' }}>{point}</span>
                   </motion.li>
                 ))}
               </ul>
             </div>
-            <motion.img
-              src={slides[slideIndex].image}
-              alt={slides[slideIndex].title}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.7 }}
-              style={{ width: '400px', height: '300px', borderRadius: '10px', objectFit: 'cover', border: `2px solid ${slides[slideIndex].color}` }}
-            />
           </motion.div>
         </AnimatePresence>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '1.5rem' }}>
+        
+        {/* Slide Indicators */}
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          gap: '0.5rem', 
+          marginTop: '1.5rem',
+          flexWrap: 'wrap'
+        }}>
           {slides.map((_, idx) => (
             <button
               key={idx}
               style={{
-                width: '12px',
-                height: '12px',
+                width: 'clamp(8px, 2vw, 12px)',
+                height: 'clamp(8px, 2vw, 12px)',
                 borderRadius: '50%',
                 background: idx === slideIndex ? slides[slideIndex].color : '#94a3b8',
                 border: 'none',
@@ -198,6 +282,64 @@ const Home = () => {
           ))}
         </div>
       </div>
+
+      {/* Responsive CSS */}
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .tech-slide-container {
+            flex-direction: column !important;
+            text-align: center;
+            padding: 1rem !important;
+            gap: 1rem !important;
+          }
+          
+          .tech-image-container {
+            order: -1;
+            width: 100%;
+          }
+          
+          .tech-image {
+            max-width: 280px !important;
+            height: 180px !important;
+          }
+          
+          .tech-content {
+            text-align: center;
+          }
+          
+          .tech-content > div {
+            justify-content: center;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .tech-slide-container {
+            padding: 0.8rem !important;
+            min-height: 300px !important;
+          }
+          
+          .tech-image {
+            max-width: 250px !important;
+            height: 150px !important;
+          }
+          
+          h2 {
+            margin-top: -30px !important;
+            margin-bottom: 1.5rem !important;
+          }
+        }
+        
+        @media (max-width: 360px) {
+          .tech-image {
+            max-width: 220px !important;
+            height: 130px !important;
+          }
+          
+          .tech-slide-container {
+            min-height: 280px !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };
