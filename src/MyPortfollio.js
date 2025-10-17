@@ -12,6 +12,8 @@ import About from './components/About';
 import Skills from './components/Skills';
 import Projects from './components/Projects';
 import Contact from './components/Contact';
+import ChatBot from './components/ChatBot'; // Import ChatBot
+import './components/ChatBot.css'; // Import ChatBot styles
 
 const Portfolio = () => {
   const [activeSection, setActiveSection] = useState('about');
@@ -106,7 +108,45 @@ const Portfolio = () => {
       ],
       image: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485"
     },
-    // ... other slides data (same as your original)
+    {
+      title: "Full-Stack Development",
+      icon: <FiCode />,
+      color: colors[1].color,
+      description: "Building robust, scalable web applications with modern technologies and best practices.",
+      points: [
+        "Frontend: React, JavaScript, HTML5, CSS3, Tailwind",
+        "Backend: Django, Node.js, REST APIs",
+        "Database: MySQL, Oracle, MS SQL",
+        "Authentication: JWT, OAuth"
+      ],
+      image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c"
+    },
+    {
+      title: "Data Science & Analytics",
+      icon: <FiDatabase />,
+      color: colors[2].color,
+      description: "Transforming raw data into actionable insights and predictive models.",
+      points: [
+        "Data Analysis: Pandas, NumPy for data manipulation",
+        "Visualization: Power BI, Matplotlib, Seaborn",
+        "Statistical Modeling: Hypothesis testing, regression",
+        "Big Data: Handling large datasets efficiently"
+      ],
+      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71"
+    },
+    {
+      title: "Cloud & DevOps",
+      icon: <FiCloud />,
+      color: colors[3].color,
+      description: "Implementing CI/CD pipelines and cloud solutions for scalable deployments.",
+      points: [
+        "Containerization: Docker for application packaging",
+        "Version Control: Git, GitHub for collaboration",
+        "CI/CD: Automated testing and deployment",
+        "Cloud Services: AWS, Azure fundamentals"
+      ],
+      image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa"
+    }
   ];
 
   useEffect(() => {
@@ -162,6 +202,9 @@ const Portfolio = () => {
           {renderActiveSection()}
         </SectionContainer>
       </main>
+
+      {/* Add ChatBot Component */}
+      <ChatBot />
     </div>
   );
 };

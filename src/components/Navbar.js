@@ -126,7 +126,7 @@ const Navbar = ({ activeSection, setActiveSection }) => {
         transition={{ duration: 0.3 }}
         className="fixed-top"
         style={{
-          background: 'linear-gradient(90deg, #3c4149ff 0%, #323233ff 50%, #26406cff 100%)',
+          background: 'linear-gradient(90deg, #1a1b1eff 0%, #242428ff 50%, #060f1dff 100%)',
           borderBottom: '1px solid rgba(255,255,255,0.2)',
           padding: '0.48rem 0',
           zIndex: 1002
