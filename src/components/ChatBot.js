@@ -433,7 +433,7 @@ const ChatBot = () => {
             exit={{ opacity: 0, scale: 0.8, y: 100 }}
             transition={{ type: "spring", damping: 25 }}
             style={{
-              marginLeft: isMobile ? '60px' : '0',
+              marginLeft: isMobile ? '40px' : '0',
               position: 'fixed',
               // position:isMobile?'fixed':'fixed',
               bottom: chatBottom,  
@@ -441,7 +441,7 @@ const ChatBot = () => {
               width: chatWidth,  
               height: chatHeight,  
               maxWidth: isMobile ? '360px' : '360px',
-              maxHeight: isMobile ? 'none' : '550px',
+              maxHeight: isMobile ? '450px' : '550px',
               background: 'linear-gradient(135deg, rgba(20, 21, 21, 0.7) 0%, rgba(40, 69, 75, 0.7) 100%, rgba(0, 0, 0, 0.7) 100%)',  
               backdropFilter: 'blur(20px), transparent',
               borderRadius: isMobile ? '12px' : '15px',
