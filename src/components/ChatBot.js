@@ -13,6 +13,8 @@ const ChatBot = () => {
   const [highlightedWords, setHighlightedWords] = useState({});
   const [isMobile, setIsMobile] = useState(false);
   const [showSendButton, setShowSendButton] = useState(false);
+  const [bubbles, setBubbles] = useState([]);
+  const [buttonPosition, setButtonPosition] = useState({ x: 0, y: 0 });
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
   const silenceTimer = useRef(null);
@@ -36,6 +38,52 @@ const ChatBot = () => {
   useEffect(() => {
     setShowSendButton(inputMessage.trim().length > 0);
   }, [inputMessage]);
+
+  // Move toggle button around screen every 30 seconds
+  useEffect(() => {
+    if (!isOpen) {
+      const moveButton = () => {
+        const maxX = window.innerWidth - (isMobile ? 60 : 70);
+        const maxY = window.innerHeight - (isMobile ? 60 : 70);
+        
+        const newX = Math.random() * maxX;
+        const newY = Math.random() * maxY;
+        
+        setButtonPosition({ x: newX, y: newY });
+      };
+
+      // Initial position
+      setButtonPosition({ 
+        x: window.innerWidth - (isMobile ? 80 : 90), 
+        y: window.innerHeight - (isMobile ? 80 : 90) 
+      });
+
+      const interval = setInterval(moveButton, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [isOpen, isMobile]);
+
+  // Bubble effects
+  useEffect(() => {
+    if (!isOpen) {
+      const bubbleInterval = setInterval(() => {
+        const newBubble = {
+          id: Date.now() + Math.random(),
+          x: Math.random() * 40 - 20,
+          y: Math.random() * 40 - 20,
+          size: Math.random() * 15 + 5,
+          duration: Math.random() * 3 + 2
+        };
+        setBubbles(prev => [...prev.slice(-5), newBubble]);
+      }, 2000);
+
+      return () => {
+        clearInterval(bubbleInterval);
+      };
+    } else {
+      setBubbles([]);
+    }
+  }, [isOpen]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -343,7 +391,7 @@ const ChatBot = () => {
     setHighlightedWords({});
   };
 
-  // Responsive dimensions
+  // Responsive dimensions - Keeping original compact sizes
   const chatWidth = isMobile ? 'calc(100vw - 2rem)' : '360px';
   const chatHeight = isMobile ? 'calc(100vh - 7rem)' : '550px';
   const chatBottom = isMobile ? '1rem' : '5rem';
@@ -351,79 +399,153 @@ const ChatBot = () => {
 
   return (
     <>
-      {/* Chat Bot Toggle Button - Responsive size */}
-      <motion.button
-        className="chatbot-toggle"
-        onClick={() => setIsOpen(!isOpen)}
+      {/* Enhanced Chat Bot Toggle Button with Movement */}
+      <motion.div
+        className="chatbot-toggle-container"
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
-        whileHover={{ 
-          scale: 1.2, 
-          boxShadow: '0 0 12px rgba(102, 126, 234, 0.7)',
-          y: -2
-        }}
-        whileTap={{ scale: 0.9 }}
         style={{
           position: 'fixed',
-          bottom: '1rem',  
-          right: '1rem',  
-          width: isMobile ? '45px' : '50px',  
-          height: isMobile ? '45px' : '50px', 
-          borderRadius: '50%',
-          background: 'rgba(255,255,255,0.15)',  
-          border: '1px solid rgba(102, 126, 234, 0.3)',  
-          color: '#667eea',  
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: isMobile ? '1rem' : '1.2rem',  
-          boxShadow: '0 0 8px rgba(102, 126, 234, 0.5)',  
-          zIndex: 2000,  
+          left: buttonPosition.x,
+          top: buttonPosition.y,
+          zIndex: 2000,
+          transition: 'left 2s ease-in-out, top 2s ease-in-out',
         }}
       >
-        <AnimatePresence mode="wait">
-          {isOpen ? (
+        {/* Bubbles Animation */}
+        <AnimatePresence>
+          {bubbles.map((bubble) => (
             <motion.div
-              key="close"
-              initial={{ rotate: -180, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: 180, opacity: 0 }}
-            >
-              <FiX />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="chat"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0 }}
-              whileHover={{ rotate: 15 }}
-            >
-              <FiMessageCircle />
-            </motion.div>
-          )}
+              key={bubble.id}
+              initial={{ opacity: 0.7, scale: 0, x: 0, y: 0 }}
+              animate={{ 
+                opacity: [0.7, 0.4, 0],
+                scale: [0, 1, 1.5],
+                x: bubble.x,
+                y: bubble.y - 50
+              }}
+              exit={{ opacity: 0 }}
+              transition={{ 
+                duration: bubble.duration,
+                ease: "easeOut"
+              }}
+              style={{
+                position: 'absolute',
+                width: bubble.size,
+                height: bubble.size,
+                borderRadius: '50%',
+                background: 'radial-gradient(circle, rgba(102,126,234,0.6) 0%, rgba(102,126,234,0.2) 70%)',
+                pointerEvents: 'none',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+              }}
+            />
+          ))}
         </AnimatePresence>
-        
-        {/* Pulsing Animation like social glow */}
-        {!isOpen && (
-          <motion.div
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              border: '2px solid #667eea',
-              borderRadius: '50%',
-            }}
-            animate={{ scale: [1, 1.2, 1], opacity: [1, 0, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          />
-        )}
-      </motion.button>
 
-      {/* Chat Bot Window - Responsive design */}
+        {/* Main Toggle Button - Normal/Larger Size */}
+        <motion.button
+          className="chatbot-toggle"
+          onClick={() => setIsOpen(!isOpen)}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          whileHover={{ 
+            scale: 1.1, 
+            boxShadow: '0 0 20px rgba(102, 126, 234, 0.8), 0 0 40px rgba(102, 126, 234, 0.6)',
+          }}
+          whileTap={{ scale: 0.95 }}
+          style={{
+            width: isMobile ? '65px' : '70px',
+            height: isMobile ? '65px' : '70px',
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, rgba(30, 30, 40, 0.95) 0%, rgba(50, 50, 70, 0.95) 100%)',
+            border: '2px solid rgba(102, 126, 234, 0.7)',
+            color: '#667eea',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: isMobile ? '1.4rem' : '1.6rem',
+            boxShadow: '0 0 25px rgba(102, 126, 234, 0.6), inset 0 0 25px rgba(102, 126, 234, 0.3)',
+            zIndex: 2000,
+            position: 'relative',
+            overflow: 'hidden',
+          }}
+        >
+          <AnimatePresence mode="wait">
+            {isOpen ? (
+              <motion.div
+                key="close"
+                initial={{ rotate: -180, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: 180, opacity: 0 }}
+              >
+                <FiX />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="chat"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0 }}
+                whileHover={{ rotate: 15 }}
+              >
+                <FiMessageCircle />
+              </motion.div>
+            )}
+          </AnimatePresence>
+          
+          {/* Enhanced Pulsing Animation */}
+          {!isOpen && (
+            <>
+              <motion.div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  border: '2px solid #667eea',
+                  borderRadius: '50%',
+                }}
+                animate={{ 
+                  scale: [1, 1.3, 1],
+                  opacity: [0.7, 0.3, 0.7]
+                }}
+                transition={{ 
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+              <motion.div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  border: '1px solid #a0a0ff',
+                  borderRadius: '50%',
+                }}
+                animate={{ 
+                  scale: [1, 1.5, 1],
+                  opacity: [0.4, 0.1, 0.4]
+                }}
+                transition={{ 
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 0.5
+                }}
+              />
+            </>
+          )}
+        </motion.button>
+      </motion.div>
+
+      {/* Chat Bot Window - Keeping Original Compact Size */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -433,24 +555,23 @@ const ChatBot = () => {
             exit={{ opacity: 0, scale: 0.8, y: 100 }}
             transition={{ type: "spring", damping: 25 }}
             style={{
-              marginLeft: isMobile ? '40px' : '0',
+              marginLeft: isMobile ? '25px' : '0',
               position: 'fixed',
-              // position:isMobile?'fixed':'fixed',
-              bottom: chatBottom,  
-              right: chatRight,  
-              width: chatWidth,  
-              height: chatHeight,  
+              bottom: chatBottom,
+              right: chatRight,
+              width: chatWidth,
+              height: chatHeight,
               maxWidth: isMobile ? '360px' : '360px',
               maxHeight: isMobile ? '450px' : '550px',
-              background: 'linear-gradient(135deg, rgba(20, 21, 21, 0.7) 0%, rgba(40, 69, 75, 0.7) 100%, rgba(0, 0, 0, 0.7) 100%)',  
+              background: 'linear-gradient(135deg, rgba(20, 21, 21, 0.7) 0%, rgba(40, 69, 75, 0.7) 100%, rgba(0, 0, 0, 0.7) 100%)',
               backdropFilter: 'blur(20px), transparent',
               borderRadius: isMobile ? '12px' : '15px',
-              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6)',  
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6)',
               display: 'flex',
               flexDirection: 'column',
-              border: '2px solid transparent',  
+              border: '2px solid transparent',
               overflow: 'hidden',
-              zIndex: 2000,  
+              zIndex: 2000,
             }}
           >
             {/* Fixed Border Glow Effect */}
@@ -474,12 +595,12 @@ const ChatBot = () => {
             {/* Header with Glowing Effect */}
             <div style={{
               padding: isMobile ? '0.5rem 0.75rem' : '0.75rem 1rem',
-              background: 'rgba(240, 248, 255, 0.1)',  
-              borderBottom: '1px solid rgba(245, 245, 220, 0.2)',  
+              background: 'rgba(240, 248, 255, 0.1)',
+              borderBottom: '1px solid rgba(245, 245, 220, 0.2)',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              boxShadow: '0 0 8px rgba(102, 126, 234, 0.5)',  
+              boxShadow: '0 0 8px rgba(102, 126, 234, 0.5)',
               position: 'relative',
               zIndex: 10,
             }}>
@@ -519,8 +640,8 @@ const ChatBot = () => {
               display: 'flex',
               flexDirection: 'column',
               gap: isMobile ? '0.75rem' : '1rem',
-              background: 'rgba(240, 248, 255, 0.05)',  
-              position: 'relative'  
+              background: 'rgba(240, 248, 255, 0.05)',
+              position: 'relative'
             }}>
               {messages.map((message) => (
                 <motion.div
@@ -552,13 +673,13 @@ const ChatBot = () => {
                       justifyContent: 'center',
                       fontSize: isMobile ? '0.7rem' : '0.8rem',
                       color: 'white',
-                      boxShadow: '0 0 8px rgba(102, 126, 234, 0.5)'  
+                      boxShadow: '0 0 8px rgba(102, 126, 234, 0.5)'
                     }}>
                       {message.isBot ? <AiOutlineRobot /> : <FiUser />}
                     </div>
                     <span style={{
                       fontSize: isMobile ? '0.6rem' : '0.7rem',
-                      color: 'rgba(245, 245, 220, 0.6)'  
+                      color: 'rgba(245, 245, 220, 0.6)'
                     }}>
                       {message.isBot ? 'AI Assistant' : 'You'}
                     </span>
@@ -570,10 +691,10 @@ const ChatBot = () => {
                       padding: isMobile ? '0.8rem 0.75rem' : '0.75rem 1rem',
                       borderRadius: '5px',
                       background: message.isBot
-                        ? 'rgba(240, 248, 255, 0.1)'  
+                        ? 'rgba(240, 248, 255, 0.1)'
                         : 'linear-gradient(135deg, #2f3232bf 0%, #3c4d56ff 100%)',
                       color: 'white',
-                      border: message.isBot ? '1px solid rgba(102, 126, 234, 0.3)' : 'none',  
+                      border: message.isBot ? '1px solid rgba(102, 126, 234, 0.3)' : 'none',
                       wordWrap: 'break-word',
                       fontSize: isMobile ? '0.8rem' : '0.9rem',
                       lineHeight: '1.4',
@@ -586,7 +707,7 @@ const ChatBot = () => {
                     {formatMessageText(message.text, highlightedWords[message.id] ?? -1)}
                     <span style={{
                       fontSize: isMobile ? '0.5rem' : '0.6rem',
-                      color: 'rgba(245, 245, 220, 0.4)',  
+                      color: 'rgba(245, 245, 220, 0.4)',
                       position: 'absolute',
                       bottom: '4px',
                       [message.isBot ? 'left' : 'right']: '8px'
@@ -605,11 +726,11 @@ const ChatBot = () => {
                     alignItems: 'center',
                     gap: '0.5rem',
                     padding: isMobile ? '0.5rem 0.75rem' : '0.75rem 1rem',
-                    background: 'rgba(240, 248, 255, 0.1)',  
+                    background: 'rgba(240, 248, 255, 0.1)',
                     borderRadius: '18px',
                     maxWidth: '80%',
                     backdropFilter: 'blur(10px)',
-                    boxShadow: '0 0 8px rgba(102, 126, 234, 0.5)'  
+                    boxShadow: '0 0 8px rgba(102, 126, 234, 0.5)'
                   }}
                 >
                   <div style={{
@@ -639,8 +760,8 @@ const ChatBot = () => {
           {/* Input Area with Reduced Gap and Glowing Effects */}
           <div style={{
             padding: isMobile ? '0.5rem 0.75rem' : '0.75rem 1rem',
-            borderTop: '1px solid rgba(245, 245, 220, 0.1)',  
-            background: 'rgba(240, 248, 255, 0.02)',  
+            borderTop: '1px solid rgba(245, 245, 220, 0.1)',
+            background: 'rgba(240, 248, 255, 0.02)',
             backdropFilter: 'blur(10px)',
             boxShadow: '0 0 8px rgba(102, 126, 234, 0.5)',
             position: 'relative'
@@ -690,8 +811,8 @@ const ChatBot = () => {
                 style={{
                   flex: 1,
                   width: '100%',
-                  background: 'rgba(240, 248, 255, 0.1)',  
-                  border: '1px solid rgba(102, 126, 234, 0.3)',  
+                  background: 'rgba(240, 248, 255, 0.1)',
+                  border: '1px solid rgba(102, 126, 234, 0.3)',
                   borderRadius: '12px',
                   padding: isMobile ? '0.7rem 65px 0.7rem 0.7rem' : '0.8rem 65px 0.8rem 0.8rem',
                   color: 'white',
@@ -735,7 +856,7 @@ const ChatBot = () => {
                     background: showSendButton 
                       ? 'linear-gradient(135deg, #9cb3beff 0%, #0f605dff 100%)'
                       : 'transparent',
-                    border: '2px solid rgba(34, 255, 0, 1)',  
+                    border: '2px solid rgba(34, 255, 0, 1)',
                     color: 'white',
                     cursor: isLoading ? 'not-allowed' : 'pointer',
                     display: 'flex',
@@ -758,7 +879,7 @@ const ChatBot = () => {
             </div>
             <p style={{
               fontSize: isMobile ? '0.6rem' : '0.7rem',
-              color: 'rgba(245, 245, 220, 0.5)',  
+              color: 'rgba(245, 245, 220, 0.5)',
               textAlign: 'center',
               margin: isMobile ? '0.25rem 0 0 0' : '0.5rem 0 0 0',
               fontStyle: 'italic'
